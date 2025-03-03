@@ -1,0 +1,54 @@
+name: "v"
+project:
+  name: "item_detection"
+
+paths:
+  raw_data_dir: "data/raw"
+  processed_data_dir: "data/processed"
+
+  dataset_paths:
+    images: "data/processed/{split}/images"
+    labels: "data/processed/{split}/labels"
+
+  sanity_check_dir: "data/processed/sanity"  # Stores sample images for validation
+
+  models_dir: "models"
+  versions_dir: "models/{project_name}"  # Versioning for different projects
+
+classes:
+  names: ["car"]  # Update with actual class names
+
+split:
+  train_ratio: 0.7  # 80% training data
+  val_ratio: 0.2   # 20% test data
+  test_ratio: 0.1   # 10% test data
+  seed: 42  # Ensures reproducibility
+
+
+training:
+  yolo_version: "yolo11n"  # Update based on the YOLO version being used
+  epochs: 5
+  batch_size: 16
+  img_size: 640  # Image input size
+  learning_rate: 0.001
+  weight_decay: 0.0005
+  optimizer: "Adam"  # Choose between Adam, SGD, etc.
+  checkpoint_dir: "models/{project_name}"  
+  model_save_path: "models/{project_name}/{version}/model.pt"  
+  pretrained_model_save_path: "models/pretrained/{yolo_version}.pt"
+
+  training_config_path: "configs/train_config.yaml"
+
+  device: "mps"  # Options: "cuda", "cpu", "mps" (for Mac M1/M2)
+
+  augmentation:  
+    flip: True  
+    rotate: 10  # Degrees
+    brightness: 0.2  
+    contrast: 0.2  
+
+logging:
+  use_dvc_live: True
+  dvc_live_dir: "training_logs/dvc_live"
+  mlflow_tracking_uri: "sqlite:///mlflow.db"  # If using MLflow
+  experiment_name: "YOLO_training"  
